@@ -35,6 +35,7 @@ import RegisterChild from '@/components/RegisterChild.vue'
 import upload from '@/components/upload.vue'
 import admin from '@/components/Admin.vue'
 import article1 from '@/components/article1.vue'
+import comment1 from '@/components/comment1.vue'
 
 Vue.use(Router)
 
@@ -209,6 +210,11 @@ export default new Router({
       path: '/article1',
       name: 'article1',
       component: article1
+    },
+    {
+      path: '/comment1',
+      name: 'comment1',
+      component: comment1
     },
     {
       path: '/admin',
