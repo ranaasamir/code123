@@ -1,0 +1,99 @@
+process.env.NODE_ENV = 'test';
+let mongoose = require("mongoose")
+let ListSchedModel = require('../api/models/ListSched');
+let List = mongoose.model('ListSched')
+
+//Require the dev-dependencies
+let chai = require('chai');
+let chaiHttp = require('chai-http');
+let server = require('../app');
+let should = chai.should();
+chai.use(chaiHttp);
+
+// this describes what the tests below are about or related to
+describe('Testing list schedule functions, function', function () {
+
+// testing that the teacher can input data and data is stored
+	describe('Testing retrieval of data from Teacher', function () {
+	it('Should retrieve data from teacher', function (done) {
+		var teacherSched = {
+			teacherName: 'Aya',
+			createdAt: 'April 10, 2018',
+			slot: '3:00 pm',
+			tue: 'Art'
+		}
+		chai.request(server)
+			.post('/api/ListSchedules/addTeacherSched')
+			.send('teacherSched')
+			.end(function (err, res) {
+				res.status.should.be.eql(201);
+				res.body.should.have.property('msg');
+				res.body.msg.should.be.eql('Stored schedule of Teacher successfully.');
+				res.body.should.have.property('data');
+				done();
+			})
+	});
+
+//testing that it does not accept data if Teacher's name, created at date or slot is missing
+	it('Should reject if there is missing data', function (done) {
+		var info = {
+			teacherName: 'Aya',
+			createdAt: '4/10/2017',
+			sat: 'Astrophysics'
+		}
+		chai.request(server)
+			.post('/api/ListSchedules/addTeacherSched')
+			.send('info')
+			.end(function (err, res) {
+				res.status.should.be.eql(422);
+				res.body.should.have.property('msg');
+				res.body.msg.should.be.eql('Please enter the name of Teacher, the date created and the slot timing.');
+				done();
+			})
+	});
+
+//testing it accepts input of teacher when requiremens are complete
+	it('Should accept if data is complete', function (done) {
+		var info = {
+			teacherName: 'Aya',
+			createdAt: 'March 6, 2018',
+			slot: '10:00',
+			mon: 'English'
+		}
+		chai.request(server)
+			.post('/api/ListSchedules/addTeacherSched')
+			.send('info')
+			.end(function (err, res) {
+				res.status.should.be.eql(201);
+				res.body.should.have.property('msg');
+				res.body.msg.should.bbbe.eql('Stored schedule of Teacher successfully.');
+				done();
+			})
+	});
+});
+
+	describe('Testing input of schedule/sessions of Teacher into list', function () {
+
+// testing if input of teacher appears in list
+		it('Should display session/lessons of Teacher and timing', function (done) {
+			chai.request(server)
+				.get('/api/ListSchedules/getSchedList')
+				.end(function (err, res) {
+					res.should.have.status(200);
+					res.body.should.have.property("msg");
+                	res.body.msg.should.be.equal('List of schedules retrieved successfully.');
+                	res.body.should.have.property("data");
+                	done();
+				})
+		});
+	});
+	// terminating test
+	after(function (done) {
+		List.remove({}, function (err) {
+			if(err) {
+				console.log(err);
+			}
+		});
+		mongoose.disconnect(done);
+	})
+});

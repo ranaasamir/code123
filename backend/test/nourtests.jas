@@ -1,0 +1,114 @@
+process.env.NODE_ENV = 'test'
+
+let base = undefined;
+if (!process.env.PWD) {
+     base = process.cwd();
+  }else{
+     base = process.env.PWD;
+  }
+const
+    mongoose = require('mongoose'),
+    models = require('../api/models/User'),
+    User = mongoose.model('User'),
+    chai = require('chai'),
+    chaiHttp = require('chai-http'),
+    server = require(base + '/app');
+	chai.use(chaiHttp);
+	should = require('should');
+
+describe("Testing get requests", function () {
+
+    before(function (done) {
+        mongoose.connect('mongodb://localhost:27017/nawwar', function () {
+            done();
+        });
+    });
+
+    describe("get Requests valid request", function () {
+        it("Should return status 200", function (done) {
+            chai.request(server)
+                .get('/api/request/getrequests/dummyname')
+                .end(function (err, res) {
+                    res.status.should.be.eql(200);
+					res.body.msg.should.be.eql('requests retrieved successfully.');
+					res.body.should.have.property("data");
+                    done();
+                })
+
+        });
+    });
+
+	describe("get Requests not valid request", function () {
+        it("Should return status 404", function (done) {
+            chai.request(server)
+                .get('/api/request/getrequests')
+                .end(function (err, res) {
+                    res.status.should.be.eql(404);
+					res.body.msg.should.be.eql('404 Not Found');
+                    done();
+                })
+        });
+		it("Should return status 422", function (done) {
+            chai.request(server)
+                .get('/api/request/getrequests/21')
+                .end(function (err, res) {
+                    res.status.should.be.eql(422);
+					res.body.msg.should.be.eql('teacherusername required');
+                    done();
+                })
+        });
+    });
+
+	after(function (done) {
+        mongoose.disconnect(done);
+    });
+});
+
+describe("Testing add activity", function () {
+
+    before(function (done) {
+        mongoose.connect('mongodb://localhost:27017/nawwar', function () {
+            done();
+        });
+    });
+
+    describe("add activity valid request", function () {
+        it("Should return status 200", function (done) {
+			let body = {
+				userId: "5ae344e05308bc2564d90302",
+				activityId: "5ae344e05308bc2564d90302"
+			}
+            chai.request(server)
+                .post('/api/addActivty')
+				.send(body)
+                .end(function (err, res) {
+                    res.status.should.be.eql(200);
+					res.body.msg.should.be.eql('activity added successfully.');
+					res.body.should.have.property("data");
+                    done();
+                })
+
+        });
+    });
+
+	describe("add activity not valid request", function () {
+		it("Should return status 422", function (done) {
+			let body = {
+				userId: "ssssss",
+				activityId: "dddddd"
+			}
+            chai.request(server)
+                .post('/api/addActivty')
+				.send(body)
+                .end(function (err, res) {
+                    res.status.should.be.eql(422);
+					res.body.msg.should.be.eql('parameters are not valid.');
+                    done();
+                })
+        });
+    });
+
+	after(function (done) {
+        mongoose.disconnect(done);
+    });
+});
