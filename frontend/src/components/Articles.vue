@@ -1,50 +1,27 @@
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <template>
   <body>
   <home></home>
   <div id="app">
 
     <div class="container">
-
+      <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
       <h3>Articles</h3>
       <a :href="'/#/createArticle/'">Create new article</a>
-      <table class="table table-striped table-borders">
-        <thead>
-        <tr>
-          <th class="center">
-            Name
-          </th>
-          <th class="center">
-            Dates
-          </th>
-          <th class="center">
-            Content
-          </th>
-          <th class="center">
-            Author
-          </th>
-          <th class="center">
-            View
-          </th>
-          <th class="center">
-            Edit
-          </th>
-          <th class="center">
-            Delete
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="article_details in ShowTable" :key="article_details._id">
-          <td>{{article_details.Name}}</td>
-          <td>{{article_details.Dates}}</td>
-          <td>{{article_details.Content}}</td>
-          <td>{{article_details.Author}}</td>
-          <td><a :href="'/#/Article/' + article_details._id">View</a></td>
-          <td><a :href="'/#/editArticle/' + article_details._id">Edit</a></td>
-          <td><button type="submit" v-on:click="Delete(article_details._id)">Delete</button></td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="span8" v-for="article_details in ShowTable" :key="article_details._id">
+        <h1>{{article_details.Name}}</h1>
+        <p>{{article_details.Content}}</p>
+        <div>
+          <div class="tags">
+            <span class="btn-info"><a :href="'/#/Article/' + article_details._id">View</a></span>
+            <span class="btn-info"><a :href="'/#/editArticle/' + article_details._id">Edit</a></span>
+            <span class="btn-info" v-on:click="Delete(article_details._id)">Delete</span>
+          </div>
+        </div>
+        <div class="clear"></div>
+        <hr>
+      </div>
     </div>
   </div>
   <foot></foot>
@@ -67,7 +44,40 @@
     margin-bottom: 20px;
   }
 </style>
-
+<style>
+  .clear {
+    clear:both;
+  }
+  .btn-info {
+    margin-right:15px;
+    text-transform:uppercase;
+    padding:10px;
+    display:block;
+    float:left;
+  }
+  .btn-info a {
+    display:block;
+    text-decoration:none;
+    width:100%;
+    height:100%;
+    color:#fff;
+  }
+  .more.label {
+    float:right;
+  }
+  body {
+    background: url('../assets/blur.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+  }
+  h1 {
+    font-family: 'Crete Round', serif;
+    font-weight: bold;
+    color: #444;
+    font-size: 45px;
+    margin-bottom: 20px;
+  }
+</style>
 <script>
 import axios from 'axios'
 import {VueEditor} from 'vue2-editor'
